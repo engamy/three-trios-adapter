@@ -1,0 +1,256 @@
+Three Trios Card Game
+
+Game Process
+- To begin playing the game, the user can initialize a ThreeTriosModel(), a TTSwingView() using the
+ model and a TTSwingController() using the view.
+- In order to set up and start the game, the user must call startGame() on the TTSwingController()
+ using the ThreeTriosModel(), this method also takes in the paths for two configuration files as
+ Strings, one for the grid set up and one for the cards
+- (The model checks if the row and column values are valid and assumes that the grid layout
+    and card config file are properly written)
+- The user can then select a card from their hand to move onto the field and battle! The model
+  changes turns after a card is played for the opposing player to then go
+- The game is complete once all the cells are filled and the winner is calculated by which player
+    controls the most tiles
+
+IMPORTANT INFORMATION
+- Player can choose from 3 grid configurations:
+    - ConnectedCellsBoard
+    - DisconnectedCellsBoard
+    - NoHolesBoard
+- Player can choose from 2 card configurations: All Cards, Few Cards
+- Row and column sizes cannot be less than 3
+- Grid configurations must have an odd number of empty spaces
+- The origin (0,0) is at the top left of the grid, and the model is all set in 0-index
+- Invariant: Grid size is never smaller than 3 x 3, this can instantaneously be seen as true because
+    the grid is always larger than 3 x 3. The initialization of the grid also throws an exception if
+    the player attempts to configure a grid that is smaller than 3 x 3.
+
+CAUTION
+- EndGameBoardForTesting is strictly used to test the end game functionality
+- InvalidNumHolesBoardForTesting is strictly used to test grid initialization error
+
+CLASS EXPLANATIONS:
+ThreeTriosModel
+- A model that contains all of the implementation and is able to to play Three Trios
+
+ThreeTriosModelInterface
+- An interface that contains all public methods for a model, with documentation
+
+ThreeTriosTextView
+- A Text View that contains the implementation to represent the game's status in text format
+
+ThreeTriosTextViewInterface
+- An interface that represents the methods needed to visually show the status of the game
+
+Cell
+- An interface representing any cell in the grid or hand
+
+PlayingCard
+- Represents a cell in the grid/player hand that has been/can be played
+
+Hole
+- Represents a cell in the grid that is unable to have cards
+
+EmptyCard
+- Represents a cell in the grid that currently is not holding a card
+
+Ensure
+- A static method class used to confirm values are valid and non-null
+
+CardColor
+- Represents the color of a card (R for Red Player, B for Blue Player)
+
+CardValue
+- Represents a cards value from 2-9 & A (Equivalent to 10)
+
+
+SOURCE ORGANIZATION
+
+CardConfigs
+// Package contains all card configurations (both testing and gameplay)
+> AllCards
+> FewCards
+> NotEnoughCardsForTesting
+> TestingCards
+
+GridConfigs
+// Package contains all card configurations (both testing and gameplay)
+> ConnectedCellsBoard
+> DisconnectedCellsBoard
+> EndGameBoardForTesting
+> InvalidNumHolesBoardForTesting
+> NoHolesBoard
+> StrategyTranscriptBoard
+
+GUIScreenshots
+// Contains photos of our working GUI for visual evidence
+
+src
+// Contains all implementation code for controller, model, view and holds the main class
+> controller
+  // Contains all classes involving controller and strategies
+  - ConfigureGame
+  - CornerStrat
+  - FlipStrat
+  - Strategies
+  - StratMove
+  - TTController
+  - TTSwingController
+> model
+  // Contains all classes involving model, including Cell interface & Ensure static class
+  - AIPlayer
+  - CardColor
+  - CardValue
+  - Cell
+  - EmptyCard
+  - Ensure
+  - Hole
+  - HumanPlayer
+  - ModelFeatures
+  - Player
+  - PlayingCard
+  - ReadonlyThreeTriosModel
+  - ThreeTriosModel
+  - ThreeTriosModelInterface
+> view
+  // Contains all classes involving view
+  - TTPanel
+  - TTSwingView
+  - TTSwingViewInterface
+  - TTTextView
+  - TTTextViewInterface
+> ThreeTrios (Main Class)
+
+test
+// Contains all testing classes
+> ThreeTriosControllerTests
+> ThreeTriosMock
+> ThreeTriosModelImplementationEnsureTests
+> ThreeTriosModelTextViewTests
+> ThreeTriosPlayerStratMoveTests
+
+TextFiles
+// Contains the text files for this assignment
+> PeerReview.txt
+> README
+> SelfReview.txt
+
+strategy-transcript.txt
+// A plain-text file that contains a transcript from our mocked model of our simplest strategy
+// choosing a move for Red on the starting board configuration of the 3x3 board with no holes.
+---------------------------------------------------------------------------------------------------
+TESTING STRATEGIES USING ThreeTriosMock
+
+To test our strategies and ensure that Strategy 1 checks every cell on the grid for every possible
+card in the hand, we copied FlipStrat from the controller into ThreeTriosMock so it can add the
+hand index, row number, and col number of every cell it checks to an appendable in the mock.
+Similarly, we also moved CornerStrat (for Strategy 2) into the ThreeTriosMock class and
+have both append to a Appendable called transcript. We needed to add a public method in
+ThreeTriosMock called getTranscript() so we could access the transcript as proof that the strategies
+do, in fact, look at the cells needed for each strategy.
+
+
+CHANGES FOR PART 2
+
+README
+- Updated with Source Organization, and new Game Process that involves the controller
+
+ThreeTriosModelInterface Changes:
+
+- Moved all public observer methods into ReadonlyThreeTriosModel, keeping
+  mutable methods in ThreeTriosModelInterface
+- Created a public observer called getScore(String player) that determines
+  the score for the given player
+- Created a public observer called isCellFree(int row, int col) that determines
+  if the cell at the row/col is an EmptyCard or not
+- Created a public observer called numCardsFlipped(int row, int col) that
+  determines the number of cards that will be flipped if the player places a
+  card at the given row/col
+- Moved the methods that configure the grid and cards from the model to the controller package
+  in the ConfigureGame class' static methods called initGrid() and initDeck(). This is because
+  the model doesn't need to know the String paths for anything other than initialization, so our
+  controller now handles that.
+  - In doing this, we renamed the model's startGame() method to initGame() because the controller
+    also has a startGame() method that calls ConfigureGame.initGrid() and ConfigureGame.initDeck().
+  - Another reason we did this was to separate the view from the controller and model because when
+    we ran our tests, we needed to create a view for every example model and it ran a JFrame/JPanel
+    for every test and crashed our computers. We did this to prevent that
+  - Made createGrid(), createDeck(), and countFreeSpaces() public so ConfigureGame could access
+    them from the controller and tested them
+
+Cell Changes:
+- Changed the Exceptions thrown when trying to observe unsupported operations in
+  EmptyCard and Hole classes from IllegalArgumentException/IllegalStateException to
+  UnsupportedOperationExceptions. This way, in TTPanel it will properly paint the correct cells
+  based on the exception it catches.
+- Created a new public method in the Cell interface isInactiveSpace() that returns whether this
+  Cell can be interacted with or not
+- Created a new public method in the Cell interface called flipCount() that determines if this
+  Cell can flip a given Cell in the given direction.
+- Created a new public method in the Cell interface called flipDifficulty() that calculates how
+  hard it is to flip a Cell given a set of directions its being attacked on.
+
+Configuration Changes:
+- Created a new card configuration called TestingCards whose relevant cards are either very weak
+  or very strong. This is used for testing the strategies in the controller.
+- Created a new board configuration called StrategyTranscriptBoard that is a 3x3 board with no
+  holes used to test the strategies.
+
+---------------------------------------------------------------------------------------------------
+Main method command-line configuration:
+
+To configure the main method, type the type of players in the command line, separated by spaces.
+The three types of players you can input are:
+- "human", which represents a human player
+- "strategy1", which represents an AI player that plays using the flip strategy
+- "strategy2", which represents an AI player that plays using the corner strategy
+Examples of configurations include:
+- "human human"
+- "human strategy1"
+- "strategy2 human"
+- "strategy1 strategy2"
+Note: When configuring an AI player ("strategy1" or "strategy2", click anywhere in the AI player's
+panel to execute the strategy the AI is using).
+
+CHANGES FOR PART 3
+
+- Updated source organization in README
+- Reworked mouseClicked in TTPanel() so it didn't use a String to determine where the user is
+  clicking
+- Changed when setTitle() is called so that it reflects which player is which, not whose turn it
+  currently is
+- Changed main() method to run the game with two player views
+- Created two interfaces ModelFeatures and ViewFeatures, which are implemented in TTController and
+  contain methods that isolate high-level behaviors in the model and view
+- Created an interface Player that is implemented in AIPlayer and HumanPlayer
+- TTControllerInterface's handleHandClick and handleGridClick were reimplemented as
+  playerSelectedCard() and playerPlayCard() in ViewFeatures, implemented in TTController
+
+----------------------------------------------------------------------------------------------------
+HW8 VIEW CHANGES FOR CUSTOMER
+
+ - When providing our view for the customer, we didn't change anything from our previous code
+ - Our customer did not reach out to request any changes
+
+----------------------------------------------------------------------------------------------------
+HW8 VIEW FUNCTIONALITY
+
+What is working:
+
+- Both our view and the provider group's view appear
+- Initializing games with a human player 1 and ai player 2
+- All model functionality (i.e. the game rules)
+- Clicking to select a card in your hand
+- Clicking to play a card in the grid
+- Preventing a player from clicking in the wrong panel
+- Preventing a player from playing to the grid before selecting a card
+- Preventing a player to select a card in opposing player's hand
+- AI strategies function on the provider's view
+- End of game displays our pop-up of who the winner is and the total score of each player
+
+What is not working & why:
+- Constant refreshing doesn't work without the while loop in the main method because the only time
+anything in ControllerAdapter is called in the provider's view (ThreeTriosView) is when the user
+clicks, meaning we can't constantly refresh the provider's view. The only way we could figure out
+how to refresh constantly is by writing the while loop in main starting on line 75.
