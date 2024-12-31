@@ -1,0 +1,18 @@
+SELF REVIEW
+
+What do you wish you had done differently in your design/implementation?
+Did you learn any lessons from the code given to you, or the updates you had to make for
+your customers?
+What was your experience like with your providers?
+---------------------------------------------------------------------------------------------------
+
+The only thing we'd do differently about our own implementation is having an interface for
+StratMove that outlines the public methods we use in the current class. Then, in the Strategies
+interface, we’d change the signature for strategize() to return the StratMove interface instead of
+the concrete class. Despite this, our providers didn't contact us about any issues to fix. They
+just had one question about how our PlayingCard and StratMove interfaces work, and we explained
+how they were actually classes and what they each did.
+What we learned from the code given to us is that it's very important to have loose coupling
+between packages so you can re-implement and reuse code afterward. Also, we learned from the
+provider’s code that it’s very important to not over-organize things by, for example, creating
+lots of packages within packages.

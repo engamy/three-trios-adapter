@@ -1,0 +1,48 @@
+CODE CRITIQUE
+
+Amy Eng and Matthew Chavez Cruz's peer review of Anusha Narang and Pujita Kalinadhabhotla's
+implementation
+
+---------------------------------------------------------------------------------------------------
+How flexible are the interfaces you were given?
+
+Overall, we noticed that the provider's code was too tightly coupled. For example, the Grid
+interface had methods whose signatures needed classes from other packages, such as Position.
+Similarly, we needed to create a PlayerMove class for the Strategies interface even though we
+didn’t need to use their AI strategies for this assignment. Things like this made it hard for
+us to adapt the code because we had to create the classes based on our approximate understanding
+of what they could be. Regarding flexibility though, the methods overall are pretty flexible.
+---------------------------------------------------------------------------------------------------
+How capable are the views?
+
+The views are very capable in that it properly displays all the information needed for the game.
+However, we noticed that as the number of cards in both players' hands decreases, the numbers
+representing the attack values in each card gets larger, until they eventually overlap. This is
+just a simple aesthetics issue though, so we didn't think of it as a major issue.
+---------------------------------------------------------------------------------------------------
+How convenient was it to reuse their code?
+
+Reusing their code was inconvenient at times, with certain classes fully missing that we needed to
+recreate. There were many times we were unsure of what methods were meant to do and the
+documentation given didn’t provide enough information to properly understand it, meaning we had
+to find ways to work around it. Additionally, there were way too many packages and interfaces for
+things that could be merged together. For example, the model package has five packages, and we
+didn’t really see a need for so many packages. Despite the differences in our approach to grids,
+cards, and players, it was overall not too difficult to adapt their system to use our
+implementation.
+---------------------------------------------------------------------------------------------------
+How clearly written and well-documented was their code?
+
+The documentation of the code was often too vague without the context of the class implementation.
+There were many methods we avoided in the controller and model adaptations as their usage and
+purpose wasn’t clear and we opted for using their methods that we understood the best in order
+to smoothly integrate the two sets of interfaces.
+---------------------------------------------------------------------------------------------------
+If you needed to request changes from them, what were they and why were they needed?
+
+We didn’t really request changes. For most issues, we were able to work around them or felt that
+we could eventually find a solution. In the end, we only had one major issue which was synchronized
+refreshing of the views, since the way their view and controller communicated to each other made it
+difficult to implement. We mainly prioritized functionality of other features which left us with
+this issue far too late to ask them to make a change for us.
+---------------------------------------------------------------------------------------------------
